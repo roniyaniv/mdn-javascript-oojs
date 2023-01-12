@@ -148,6 +148,8 @@ class EvilBall extends Shape{
   
         if (distance < this.size + ball.size) {
           ball.exists = false;
+          ballCount--;
+          ballCountP.textContent = `Ball count: ${ballCount}`; 
         }
       }
     }
@@ -155,6 +157,8 @@ class EvilBall extends Shape{
 
 }
 const balls = [];
+const ballCountP = document.querySelector('p');
+let ballCount = balls.length;
 
 const evilBallSize = random(10, 20);
 const evilBall = new EvilBall(
@@ -179,6 +183,8 @@ while (balls.length < 25) {
   );
 
   balls.push(ball);
+  ballCount++;
+  ballCountP.textContent = `Ball count: ${ballCount}`; 
 }
 
 
@@ -203,3 +209,4 @@ function loop() {
 }
 
 loop();
+
