@@ -83,10 +83,90 @@ class Ball extends Shape{
 
 }
 
+
+class EvilBall extends Shape{
+
+  exists;
+
+  constructor(x, y, color, size) {
+    super(x, y, 20, 20);
+    this.color = 'white';
+    this.size = 10;
+    this.exists = true;
+
+    window.addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "a":
+          this.x -= this.velX;
+          break;
+        case "d":
+          this.x += this.velX;
+          break;
+        case "w":
+          this.y -= this.velY;
+          break;
+        case "s":
+          this.y += this.velY;
+          break;
+      }
+    });
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = this.color;
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+
+  checkBounds() {
+    if ((this.x + this.size) >= width) {
+      this.x = width - (this.size * 2);
+    }
+  
+    if ((this.x - this.size) <= 0) {
+      this.x = this.size * 2;
+    }
+  
+    if ((this.y + this.size) >= height) {
+      this.y = height - (this.size * 2);
+    }
+  
+    if ((this.y - this.size) <= 0) {
+      this.y = this.size * 1.5;
+    }
+
+  }
+
+  collisionDetect() {
+    for (const ball of balls) {
+      if (ball.exists) {
+        const dx = this.x - ball.x;
+        const dy = this.y - ball.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+  
+        if (distance < this.size + ball.size) {
+          ball.exists = false;
+        }
+      }
+    }
+  }
+
+}
 const balls = [];
+
+const evilBallSize = random(10, 20);
+const evilBall = new EvilBall(
+  random(0 + evilBallSize, width - evilBallSize),
+  random(0 + evilBallSize, height - evilBallSize),
+  randomRGB(),
+  evilBallSize
+  );
 
 while (balls.length < 25) {
   const size = random(10, 20);
+  
   const ball = new Ball(
     // ball position always drawn at least one ball width
     // away from the edge of the canvas, to avoid drawing errors
@@ -107,10 +187,17 @@ function loop() {
   ctx.fillRect(0, 0, width, height);
 
   for (const ball of balls) {
-    ball.draw();
-    ball.update();
-    ball.collisionDetect();
+    if (ball.exists){
+      ball.draw();
+      ball.update();
+      ball.collisionDetect();
+  
+    }
   }
+
+  evilBall.draw();
+  evilBall.checkBounds();
+  evilBall.collisionDetect();
 
   requestAnimationFrame(loop);
 }
